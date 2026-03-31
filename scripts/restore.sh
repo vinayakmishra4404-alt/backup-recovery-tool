@@ -1,41 +1,48 @@
 #!/bin/bash
 
 # ==============================
-# Restore Script
+# Restore Script (Modified Version)
 # ==============================
 
-BACKUP_DIR="./backups"
+ARCHIVE_DIR="./archive"
 
-# Check if backups exist
-if [ ! "$(ls -A $BACKUP_DIR)" ]; then
-    echo "❌ No backups found"
+# Check if archive folder exists
+if [ ! -d "$ARCHIVE_DIR" ]; then
+    echo "❌ No archive directory found"
     exit 1
 fi
 
-echo "📦 Available Backups:"
-ls $BACKUP_DIR
+# Check if files exist inside archive
+if [ -z "$(ls -A "$ARCHIVE_DIR")" ]; then
+    echo "❌ No backup archives available"
+    exit 1
+fi
+
+echo "📦 Available Backup Archives:"
+ls "$ARCHIVE_DIR"
 
 echo ""
-read -p "Enter backup file name: " BACKUP_FILE
+read -p "Enter archive file name to restore: " ARCHIVE_FILE
 
-# Check if file exists
-if [ ! -f "$BACKUP_DIR/$BACKUP_FILE" ]; then
-    echo "❌ Invalid backup file"
+# Validate file
+if [ ! -f "$ARCHIVE_DIR/$ARCHIVE_FILE" ]; then
+    echo "❌ Selected file does not exist"
     exit 1
 fi
 
-# Restore directory
-RESTORE_DIR="./restored"
+# Output directory
+OUTPUT_DIR="./output"
 
-mkdir -p "$RESTORE_DIR"
+# Create output directory if not exists
+mkdir -p "$OUTPUT_DIR"
 
-# Extract backup
-tar -xzf "$BACKUP_DIR/$BACKUP_FILE" -C "$RESTORE_DIR"
+# Extract archive
+tar -xzf "$ARCHIVE_DIR/$ARCHIVE_FILE" -C "$OUTPUT_DIR"
 
+# Check result
 if [ $? -eq 0 ]; then
-    echo "✅ Restore completed!"
-    echo "📁 Restored in: $RESTORE_DIR"
+    echo "✅ Restore operation completed successfully!"
+    echo "📁 Files restored in: $OUTPUT_DIR"
 else
-    echo "❌ Restore failed"
+    echo "❌ Restore operation failed"
 fi
-
